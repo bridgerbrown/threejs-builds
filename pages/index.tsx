@@ -22,59 +22,70 @@ export default function Home() {
 
     renderer.render(scene, camera);
 
-    const sphere1Texture = new THREE.TextureLoader().load('mars-texture.jpg');
+    const centerTexture = new THREE.TextureLoader().load('mars-texture.jpg');
 
-    const geometry = new THREE.SphereGeometry(1, 0, 0);
-    const material = new THREE.MeshStandardMaterial({ 
-      map: sphere1Texture,
+    const centerSphereGeometry = new THREE.SphereGeometry(1, 0, 0);
+    const centerSphereMaterial = new THREE.MeshStandardMaterial({ 
+      map: centerTexture,
     });
-    const sphere = new THREE.Mesh(geometry, material);
+    const centerSphere = new THREE.Mesh(centerSphereGeometry, centerSphereMaterial);
+    scene.add(centerSphere);
 
-    const geometry2 = new THREE.SphereGeometry(14, 40, 40);
-    const material2 = new THREE.MeshStandardMaterial({ color: 0x8C8C8C });
-    const sphere2 = new THREE.Mesh(geometry2, material2);
-    sphere2.position.z = -20;
-    sphere2.position.x = -33;
-    sphere2.position.y = 0;
-
-    const geometry3 = new THREE.SphereGeometry(14, 40, 40);
-    const material3 = new THREE.MeshStandardMaterial({ color: 0x8C8C8C });
-    const sphere3 = new THREE.Mesh(geometry3, material3);
-    sphere3.position.z = 33;
-    sphere3.position.x = 0;
-    sphere3.position.y = 0;
-
-    const geometry4 = new THREE.SphereGeometry(14, 40, 40);
-    const material4 = new THREE.MeshStandardMaterial({ 
-      color: 0x8C8C8C,
-      roughness: 0.5,
+    const childSphereGeometry = new THREE.SphereGeometry(14, 40, 40);
+    const childSphereMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0x8C8C8C, 
+      metalness: 1,
+      roughness: 0.7,
       emissive: 0x000000,
     });
-    const sphere4 = new THREE.Mesh(geometry4, material4);
-    sphere4.position.z = -20;
-    sphere4.position.x = 33;
-    sphere4.position.y = 0;
 
-    scene.add(sphere, sphere2, sphere3, sphere4);
+    const sphere1 = new THREE.Mesh( childSphereGeometry, childSphereMaterial );
+    sphere1.position.set( -33, 0, -20 );
+    centerSphere.add( sphere1 );
 
-    sphere.add(sphere2, sphere3, sphere4);
-    sphere.rotation.x = Math.PI / 5;
-    sphere.rotation.y = Math.PI / 5;
+    const sphere2 = new THREE.Mesh( childSphereGeometry, childSphereMaterial );
+    sphere2.position.set( 0, 0, 33 );
+    centerSphere.add( sphere2 );
+
+    const sphere3 = new THREE.Mesh( childSphereGeometry, childSphereMaterial );
+    sphere3.position.set( 33, 0, -20 );
+    centerSphere.add( sphere3 );
+
+    centerSphere.rotation.x = Math.PI / 5;
 
 
-    const pointLight = new THREE.PointLight(0xffffff);
-    pointLight.position.set(0, 40, 70);
+
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(-50, 70, 0);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(20, 20, 20);
 
     const ambientLight = new THREE.AmbientLight(0x00000);
-    scene.add(ambientLight, pointLight);
+
+    scene.add(ambientLight, pointLight, directionalLight);
+
+    // function addStar() {
+    //   const geometry = new THREE.SphereGeometry(0.25, 24, 24);
+    //   const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    //   const star = new THREE.Mesh(geometry, material);
+    
+    //   const [x, y, z] = Array(3)
+    //     .fill()
+    //     .map(() => THREE.MathUtils.randFloatSpread(100));
+    
+    //   star.position.set(x, y, z);
+    //   scene.add(star);
+    // }
+    
+    // Array(200).fill().forEach(addStar);
 
     function animate() {
       requestAnimationFrame(animate);
     
-      sphere.rotation.y += 0.001;
-      sphere2.rotation.x += 0.01;
-  
-      // controls.update();
+      
+      centerSphere.rotation.y += 0.001;
+    
     
       renderer.render(scene, camera);
     }
