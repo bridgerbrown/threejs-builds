@@ -8,7 +8,7 @@ export default function Home() {
 
     scene.background = new THREE.Color(0x303030);
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 
     const renderer = new THREE.WebGLRenderer({
       canvas: document.querySelector('#bg'),
@@ -16,9 +16,10 @@ export default function Home() {
 
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.position.setZ(70);
-    camera.position.setX(-2);
-    camera.position.setY(-1);
+    camera.position.setZ(0);
+    camera.position.setX(0);
+    camera.position.setY(150);
+    camera.lookAt(0, 0, 0);
 
     renderer.render(scene, camera);
 
@@ -40,18 +41,18 @@ export default function Home() {
     });
 
     const sphere1 = new THREE.Mesh( childSphereGeometry, childSphereMaterial );
-    sphere1.position.set( -33, 0, -20 );
+    sphere1.position.set( 0, 0, 55 );
     centerSphere.add( sphere1 );
 
     const sphere2 = new THREE.Mesh( childSphereGeometry, childSphereMaterial );
-    sphere2.position.set( 0, 0, 33 );
+    sphere2.position.set( 45, 0, -30 );
     centerSphere.add( sphere2 );
 
     const sphere3 = new THREE.Mesh( childSphereGeometry, childSphereMaterial );
-    sphere3.position.set( 33, 0, -20 );
+    sphere3.position.set( -45, 0, -30 );
     centerSphere.add( sphere3 );
 
-    centerSphere.rotation.x = Math.PI / 5;
+    centerSphere.rotation.x = Math.PI ;
 
 
 
@@ -84,7 +85,7 @@ export default function Home() {
       requestAnimationFrame(animate);
     
       
-      centerSphere.rotation.y += 0.001;
+      // centerSphere.rotation.y += 0.02;
     
     
       renderer.render(scene, camera);
