@@ -34,25 +34,13 @@ export default function Home() {
     const centerSphere = new THREE.Mesh(centerSphereGeometry, centerSphereMaterial);
     scene.add(centerSphere);
 
-    const childSphereGeometry = new THREE.SphereGeometry(20, 40, 40);
-    const childSphereMaterial = new THREE.MeshStandardMaterial({ 
-      color: 0x8C8C8C, 
-      metalness: 1,
-      roughness: 0.7,
-      emissive: 0x000000,
-    });
-
     // Spheres Orbitting
 
       // Orbitting Math
-      let sphere1Coords
-      let sphere2Coords
-      let sphere3Coords;
-
       const orbitingSpheres: any = [];
       for (let i = 0; i < 3; i++) {
-        const sphere = new THREE.Mesh(new THREE.SphereGeometry(12, 32, 32), new THREE.MeshStandardMaterial({
-          color: 0xFF1000, 
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(13, 32, 32), new THREE.MeshStandardMaterial({
+          map: centerTexture,
           metalness: 1,
           roughness: 0.7,
           emissive: 0x000000,
@@ -90,24 +78,39 @@ export default function Home() {
     const animationScripts: { start: number; end: number; func: () => void }[] = []
 
     // animation that opens the 3 spheres positions
-      animationScripts.push({
-        start: 0,
-        end: 40,
-        func: () => {
-          const angle1 = (2 * Math.PI) / 9;
-          const angle2 = angle1 + (2 * Math.PI) / 3;
-          const angle3 = angle2 + (2 * Math.PI) / 3;
-    
-          const distance = 15 + window.scrollY / 50;
-    
-          orbitingSpheres[0].position.set(distance * Math.sin((2 * Math.PI * 0) / 3), 0, distance * Math.cos((2 * Math.PI * 0) / 3));
-          orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
-          orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
+    animationScripts.push({
+      start: 0,
+      end: 30,
+      func: () => {
+        const angle1 = (2 * Math.PI) / 9;
+        const angle2 = angle1 + (2 * Math.PI) / 3;
+        const angle3 = angle2 + (2 * Math.PI) / 3;
+  
+        const distance = 0 + window.scrollY / 33;
+  
+        orbitingSpheres[0].position.set(distance * Math.sin((2 * Math.PI * 0) / 3), 0, distance * Math.cos((2 * Math.PI * 0) / 3));
+        orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
+        orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
 
-          camera.position.x = lerp(80, 0, scalePercent(0, 40));
-          camera.position.y = lerp(80, 150, scalePercent(0, 40));
-        },
-      })
+        camera.position.x = lerp(50, 90, scalePercent(0, 30));
+        camera.position.y = lerp(30, 50, scalePercent(0, 30));
+      },
+    })
+
+    // animationScripts.push({
+    //   start: 30,
+    //   end: 80,
+    //   func: () => {
+    //     // const angle1 = (2 * Math.PI) / 9;
+    //     // const angle2 = angle1 + (2 * Math.PI) / 3;
+    //     // const angle3 = angle2 + (2 * Math.PI) / 3;
+
+
+    //     camera.position.z = lerp(0, 30, scalePercent(30, 80));
+    //     camera.position.y = lerp(30, 80, scalePercent(30, 80));
+
+    //   },
+    // })
 
     function playScrollAnimations() {
       animationScripts.forEach((a) => {
@@ -136,7 +139,7 @@ export default function Home() {
     
       playScrollAnimations()
       
-      centerSphere.rotation.y += 0.005;
+      centerSphere.rotation.y += 0.002;
     
       controls.update();
 
