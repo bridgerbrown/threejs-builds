@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
-import Stats from 'three/addons/libs/stats.module.js'
+// import Stats from 'three/addons/libs/stats.module.js'
 
 export default function Home() {
   const [sphereCoords, setSphereCoords] = useState<any>([]);
@@ -29,16 +29,15 @@ export default function Home() {
 
     window.addEventListener( 'resize', onWindowResized );
 
-    let stats = new Stats();
-    document.body.appendChild( stats.dom );
+    // let stats = new Stats();
+    // document.body.appendChild( stats.dom );
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    new RGBELoader().load( 'quarry_01_1k.hdr', function ( texture: any ) {
+    new RGBELoader().load( 'sky-bw.hdr', function ( texture: any ) {
       texture.mapping = THREE.EquirectangularReflectionMapping;
       scene.background = texture;
       scene.environment = texture;
-
       renderer.render(scene, camera);
     } );
 
@@ -49,7 +48,6 @@ export default function Home() {
     const centerSphere = new THREE.Mesh(centerSphereGeometry, centerSphereMaterial);
     scene.add(centerSphere);
 
-    const orbitingSpheres: any = [];
     let cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 256 );
     cubeRenderTarget.texture.type = THREE.HalfFloatType;
     let cubeCamera = new THREE.CubeCamera( 1, 1000, cubeRenderTarget );
@@ -58,6 +56,8 @@ export default function Home() {
       roughness: 0.05,
       metalness: 1
     } );
+    
+    const orbitingSpheres: any = [];
     for (let i = 0; i < 3; i++) {
       const sphere = new THREE.Mesh(new THREE.IcosahedronGeometry( 15, 8 ), material );
       orbitingSpheres.push(sphere);
@@ -98,7 +98,7 @@ export default function Home() {
           camera.position.y = lerp(40, 180, scalePercent(0, 40));
           camera.position.z = lerp(40, 40, scalePercent(0, 40));
 
-          centerSphere.rotation.x = lerp(-4, 3, scalePercent(0, 40));
+          centerSphere.rotation.x = lerp(0, 3, scalePercent(0, 40));
         },
       })
       animationScripts.push({
@@ -116,10 +116,10 @@ export default function Home() {
           orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
           orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
 
-          camera.position.x = lerp(80, 60, scalePercent(40, 80));
-          camera.position.y = lerp(160, 50, scalePercent(40, 80));
+          camera.position.x = lerp(100, 60, scalePercent(40, 80));
+          camera.position.y = lerp(180, 50, scalePercent(40, 80));
 
-          centerSphere.rotation.x = lerp(3, 12, scalePercent(40, 101));
+          centerSphere.rotation.x = lerp(3, 6, scalePercent(40, 101));
         },
       })
 
@@ -173,11 +173,11 @@ export default function Home() {
             }
           }
         </script> */}
-      <div className='fixed z-10 w-full min-h-screen top-0 opacity-0'></div>
-      <canvas id="bg" className='fixed top-0 left-0'></canvas>
+      <div className='fixed bg-black w-full min-h-screen top-0 opacity-0'></div>
+      <canvas id="bg" className='fixed top-0 left-0 opacity-70 '></canvas>
         <main>
 
-        <div id="scrollProgress" className='fixed top-1 left-1 text-sm opacity-50'></div>
+        <div id="scrollProgress" className='fixed z-10 top-1 left-1 text-sm opacity-50'></div>
 
         <header className='mb-[1000px]'>
           <h1>Bridger Brown</h1>
@@ -243,7 +243,7 @@ export default function Home() {
         </section>
 
         <blockquote>
-          <p>Thanks for watching!</p>
+          <p>waddddup</p>
         </blockquote>
 
 
