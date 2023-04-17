@@ -7,7 +7,7 @@ export default function Home() {
 
   useEffect(() => {
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x303030);
+    scene.background = new THREE.Color(0x0f0f0f);
 
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({
@@ -27,7 +27,7 @@ export default function Home() {
 
     // Center Object
 
-    const centerSphereGeometry = new THREE.SphereGeometry(1, 0, 0);
+    const centerSphereGeometry = new THREE.SphereGeometry(0, 0, 0);
     const centerSphereMaterial = new THREE.MeshStandardMaterial({ 
       map: centerTexture,
     });
@@ -88,8 +88,8 @@ export default function Home() {
         orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
         orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
 
-        camera.position.x = lerp(60, 80, scalePercent(0, 40));
-        camera.position.y = lerp(60, 160, scalePercent(0, 40));
+        camera.position.x = lerp(50, 80, scalePercent(0, 40));
+        camera.position.y = lerp(50, 160, scalePercent(0, 40));
 
         centerSphere.rotation.x = lerp(0, 3, scalePercent(0, 40));
         centerSphere.rotation.y += 0.002;
@@ -114,13 +114,10 @@ export default function Home() {
         orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
         orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
 
-        camera.position.x = lerp(80, 80, scalePercent(40, 90));
-        camera.position.y = lerp(160, 160, scalePercent(40, 90));
+        camera.position.x = lerp(80, 50, scalePercent(40, 90));
+        camera.position.y = lerp(160, 50, scalePercent(40, 90));
 
         centerSphere.rotation.x = lerp(3, 6, scalePercent(40, 90));
-
-        // camera.position.z = lerp(0, 30, scalePercent(30, 80));
-        // camera.position.y = lerp(30, 80, scalePercent(30, 80));
 
       },
     })
@@ -172,8 +169,9 @@ export default function Home() {
 
 
   return (
-    <main className="bg-white w-full min-h-screen">
-      <canvas id="bg"></canvas>
+    <main className="bg-black w-full min-h-screen">
+      <div className='fixed z-10 bg-black w-full min-h-screen top-0 opacity-0'></div>
+      <canvas id="bg" className=''></canvas>
         <main>
 
         <div id="scrollProgress" className='fixed'></div>
