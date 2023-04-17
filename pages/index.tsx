@@ -1,82 +1,79 @@
 import { useEffect, useState } from 'react';
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-
-// TO DO:
-// 1. Add 3 more to make 6 ring.
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
+import Stats from 'three/addons/libs/stats.module.js'
 
 export default function Home() {
   const [sphereCoords, setSphereCoords] = useState<any>([]);
 
   useEffect(() => {
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0f0f0f);
-
-
-    // Camera
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000, );
       camera.position.setX(60);
       camera.position.setY(60);
       camera.position.setZ(0);
       camera.lookAt(0, 0, 0);
-      camera.setFocalLength(30)
-      camera.fov = 40
-      camera.updateProjectionMatrix();
+      // camera.setFocalLength(30)
+      // camera.fov = 37
+      // camera.updateProjectionMatrix();
 
-    // Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas: document.querySelector('#bg'),
+      antialias: true,
     })
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.render(scene, camera);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+    window.addEventListener( 'resize', onWindowResized );
+
+    let stats = new Stats();
+    document.body.appendChild( stats.dom );
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    // BG Texture
-    const centerTexture = new THREE.TextureLoader().load('mars-texture.jpg');
+    new RGBELoader().load( 'quarry_01_1k.hdr', function ( texture: any ) {
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      scene.background = texture;
+      scene.environment = texture;
 
-    // Center Object
+      renderer.render(scene, camera);
+    } );
+
     const centerSphereGeometry = new THREE.SphereGeometry(0, 0, 0);
     const centerSphereMaterial = new THREE.MeshStandardMaterial({ 
-      map: centerTexture,
+      color: 0xffffff,
     });
     const centerSphere = new THREE.Mesh(centerSphereGeometry, centerSphereMaterial);
     scene.add(centerSphere);
 
-    // Spheres Orbitting
-
-      // Orbitting Math
-      const orbitingSpheres: any = [];
-      for (let i = 0; i < 3; i++) {
-        const sphere = new THREE.Mesh(new THREE.SphereGeometry(13, 32, 32), new THREE.MeshNormalMaterial({
-          color: 0x919191,
-          metalness: 1,
-          roughness: 0.7,
-          emissive: 0x000000,
-        }));
-        orbitingSpheres.push(sphere);
-        centerSphere.add(sphere);
-
-        // Position the sphere around the center sphere
-        const angle = (2 * Math.PI * i) / 3;
-        sphere.position.set(15 * Math.sin(angle), 0, 15 * Math.cos(angle));
-      }
-
-    // Lights
+    const orbitingSpheres: any = [];
+    let cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 256 );
+    cubeRenderTarget.texture.type = THREE.HalfFloatType;
+    let cubeCamera = new THREE.CubeCamera( 1, 1000, cubeRenderTarget );
+    let material = new THREE.MeshStandardMaterial( {
+      envMap: cubeRenderTarget.texture,
+      roughness: 0.05,
+      metalness: 1
+    } );
+    for (let i = 0; i < 3; i++) {
+      const sphere = new THREE.Mesh(new THREE.IcosahedronGeometry( 15, 8 ), material );
+      orbitingSpheres.push(sphere);
+      centerSphere.add(sphere);
+      // Position the sphere around the center sphere
+      const angle = (2 * Math.PI * i) / 3;
+      sphere.position.set(15 * Math.sin(angle), 0, 15 * Math.cos(angle));
+    }
 
     const pointLight = new THREE.PointLight(0xffffff, 1);
     pointLight.position.set(-50, 70, 0);
-
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(20, 20, 20);
-
     const ambientLight = new THREE.AmbientLight(0x00000);
-
     scene.add(ambientLight, pointLight, directionalLight);
 
-    // Animation
-    
     function lerp(x: number, y: number, a: number): number {
       return (1 - a) * x + a * y
     }
@@ -86,77 +83,57 @@ export default function Home() {
     }
   
     const animationScripts: { start: number; end: number; func: () => void }[] = []
-
-    // animation that opens the 3 spheres positions
-    animationScripts.push({
-      start: 0,
-      end: 40,
-      func: () => {
-      // centerSphere.rotation.y += 0.002;
-
-        const distance = 0 + window.scrollY / 25;
-  
-        orbitingSpheres[0].position.set(distance * Math.sin((2 * Math.PI * 0) / 3), 0, distance * Math.cos((2 * Math.PI * 0) / 3));
-        orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
-        orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
-
-        camera.position.x = lerp(80, 80, scalePercent(0, 40));
-        camera.position.y = lerp(80, 160, scalePercent(0, 40));
-        camera.position.z = lerp(40, 40, scalePercent(0, 40));
-
-        centerSphere.rotation.x = lerp(-4, 3, scalePercent(0, 40));
-
-
-      },
-    })
-
-    animationScripts.push({
-      start: 40,
-      end: 101,
-      func: () => {
+      animationScripts.push({
+        start: 0,
+        end: 40,
+        func: () => {
         // centerSphere.rotation.y += 0.002;
+          const distance = 0 + window.scrollY / 25;
+    
+          orbitingSpheres[0].position.set(distance * Math.sin((2 * Math.PI * 0) / 3), 0, distance * Math.cos((2 * Math.PI * 0) / 3));
+          orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
+          orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
 
-        const stoppingDistance = 30
-        let distance = (0 + window.scrollY / 25) * (1 - scalePercent(40, 101))
-        if (distance < stoppingDistance) {
-          distance = stoppingDistance
-        }
+          camera.position.x = lerp(40, 100, scalePercent(0, 40));
+          camera.position.y = lerp(40, 180, scalePercent(0, 40));
+          camera.position.z = lerp(40, 40, scalePercent(0, 40));
 
-
-        orbitingSpheres[0].position.set(distance * Math.sin((2 * Math.PI * 0) / 3), 0, distance * Math.cos((2 * Math.PI * 0) / 3));
-        orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
-        orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
-
-        camera.position.x = lerp(80, 50, scalePercent(40, 80));
-        camera.position.y = lerp(160, 50, scalePercent(40, 80));
-
-        centerSphere.rotation.x = lerp(3, 6, scalePercent(40, 101));
-
-      },
-    })
-
-    // animationScripts.push({
-    //   start: 100,
-    //   end: 101,
-    //   func: () => {
-    //     // orbitingSpheres[0].position.set(0, 0, 0);
-    //     // orbitingSpheres[1].position.set(0, 0, 0);
-    //     // orbitingSpheres[2].position.set(0, 0, 0);
-    //   }})
-
-
-    function playScrollAnimations() {
-      animationScripts.forEach((a) => {
-          if (scrollPercent >= a.start && scrollPercent < a.end) {
-              a.func()
-          }
+          centerSphere.rotation.x = lerp(-4, 3, scalePercent(0, 40));
+        },
       })
-    }
+      animationScripts.push({
+        start: 40,
+        end: 101,
+        func: () => {
+          // centerSphere.rotation.y += 0.002;
+          const stoppingDistance = 25
+          let distance = (0 + window.scrollY / 25) * (1 - scalePercent(40, 101))
+          if (distance < stoppingDistance) {
+            distance = stoppingDistance
+          }
+
+          orbitingSpheres[0].position.set(distance * Math.sin((2 * Math.PI * 0) / 3), 0, distance * Math.cos((2 * Math.PI * 0) / 3));
+          orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
+          orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
+
+          camera.position.x = lerp(80, 60, scalePercent(40, 80));
+          camera.position.y = lerp(160, 50, scalePercent(40, 80));
+
+          centerSphere.rotation.x = lerp(3, 12, scalePercent(40, 101));
+        },
+      })
+
+      function playScrollAnimations() {
+        animationScripts.forEach((a) => {
+            if (scrollPercent >= a.start && scrollPercent < a.end) {
+                a.func()
+            }
+        })
+      }
   
-    let scrollPercent = 0
+      let scrollPercent = 0
     
     document.body.onscroll = () => {
-        //calculate the current scroll progress as a percentage
         scrollPercent =
             ((document.documentElement.scrollTop || document.body.scrollTop) /
                 ((document.documentElement.scrollHeight ||
@@ -167,26 +144,37 @@ export default function Home() {
             'Scroll Progress : ' + scrollPercent.toFixed(2)
     }
 
-    function animate() {
-      requestAnimationFrame(animate);
-    
-      playScrollAnimations()
-    
-      controls.update();
+    function onWindowResized() {
+      renderer.setSize( window.innerWidth, window.innerHeight );
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    }
 
+    function animate() {
+      cubeCamera.update( renderer, scene );
+      requestAnimationFrame(animate);
+      playScrollAnimations()
+      controls.update();
       renderer.render(scene, camera);
     }
-    
     animate();
 
   }, [])
 
-
-
   return (
-    <main className="bg-black w-full min-h-screen">
-      <div className='fixed z-10 bg-black w-full min-h-screen top-0 opacity-0'></div>
-      <canvas id="bg" className=''></canvas>
+    <main className="w-full min-h-screen">
+        {/* <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script> */}
+
+        {/* <script type="importmap">
+          {
+            "imports": {
+              "three": "../build/three.module.js",
+              "three/addons/": "./jsm/"
+            }
+          }
+        </script> */}
+      <div className='fixed z-10 w-full min-h-screen top-0 opacity-0'></div>
+      <canvas id="bg" className='fixed top-0 left-0'></canvas>
         <main>
 
         <div id="scrollProgress" className='fixed top-1 left-1 text-sm opacity-50'></div>
