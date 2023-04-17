@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
+// TO DO:
+// 1. Add 3 more to make 6 ring.
+
 export default function Home() {
   const [sphereCoords, setSphereCoords] = useState<any>([]);
 
@@ -9,24 +12,31 @@ export default function Home() {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0f0f0f);
 
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000, );
+      camera.position.setX(60);
+      camera.position.setY(60);
+      camera.position.setZ(0);
+      camera.lookAt(0, 0, 0);
+      camera.setFocalLength(30)
+      camera.fov = 50
+      camera.updateProjectionMatrix();
+
+    // Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas: document.querySelector('#bg'),
     })
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.position.setX(60);
-    camera.position.setY(60);
-    camera.position.setZ(0);
-    camera.lookAt(0, 0, 0);
     renderer.render(scene, camera);
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
+    // BG Texture
     const centerTexture = new THREE.TextureLoader().load('mars-texture.jpg');
 
     // Center Object
-
     const centerSphereGeometry = new THREE.SphereGeometry(0, 0, 0);
     const centerSphereMaterial = new THREE.MeshStandardMaterial({ 
       map: centerTexture,
