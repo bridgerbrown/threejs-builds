@@ -20,7 +20,7 @@ export default function Home() {
       camera.position.setZ(0);
       camera.lookAt(0, 0, 0);
       camera.setFocalLength(30)
-      camera.fov = 50
+      camera.fov = 40
       camera.updateProjectionMatrix();
 
     // Renderer
@@ -49,7 +49,7 @@ export default function Home() {
       // Orbitting Math
       const orbitingSpheres: any = [];
       for (let i = 0; i < 3; i++) {
-        const sphere = new THREE.Mesh(new THREE.SphereGeometry(13, 32, 32), new THREE.MeshStandardMaterial({
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(13, 32, 32), new THREE.MeshNormalMaterial({
           color: 0x919191,
           metalness: 1,
           roughness: 0.7,
@@ -92,29 +92,32 @@ export default function Home() {
       start: 0,
       end: 40,
       func: () => {
-        const distance = 15 + window.scrollY / 25;
+      // centerSphere.rotation.y += 0.002;
+
+        const distance = 0 + window.scrollY / 25;
   
         orbitingSpheres[0].position.set(distance * Math.sin((2 * Math.PI * 0) / 3), 0, distance * Math.cos((2 * Math.PI * 0) / 3));
         orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
         orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
 
-        camera.position.x = lerp(50, 80, scalePercent(0, 40));
-        camera.position.y = lerp(50, 160, scalePercent(0, 40));
+        camera.position.x = lerp(80, 80, scalePercent(0, 40));
+        camera.position.y = lerp(80, 160, scalePercent(0, 40));
+        camera.position.z = lerp(40, 40, scalePercent(0, 40));
 
-        centerSphere.rotation.x = lerp(0, 3, scalePercent(0, 40));
-        centerSphere.rotation.y += 0.002;
+        centerSphere.rotation.x = lerp(-4, 3, scalePercent(0, 40));
+
 
       },
     })
 
     animationScripts.push({
       start: 40,
-      end: 90,
+      end: 101,
       func: () => {
-        centerSphere.rotation.y += 0.002;
+        // centerSphere.rotation.y += 0.002;
 
-        const stoppingDistance = 15
-        let distance = (15 + window.scrollY / 25) * (1 - scalePercent(40, 90))
+        const stoppingDistance = 30
+        let distance = (0 + window.scrollY / 25) * (1 - scalePercent(40, 101))
         if (distance < stoppingDistance) {
           distance = stoppingDistance
         }
@@ -124,20 +127,22 @@ export default function Home() {
         orbitingSpheres[1].position.set(distance * Math.sin((2 * Math.PI * 1) / 3), 0, distance * Math.cos((2 * Math.PI * 1) / 3));
         orbitingSpheres[2].position.set(distance * Math.sin((2 * Math.PI * 2) / 3), 0, distance * Math.cos((2 * Math.PI * 2) / 3));
 
-        camera.position.x = lerp(80, 50, scalePercent(40, 90));
-        camera.position.y = lerp(160, 50, scalePercent(40, 90));
+        camera.position.x = lerp(80, 50, scalePercent(40, 80));
+        camera.position.y = lerp(160, 50, scalePercent(40, 80));
 
-        centerSphere.rotation.x = lerp(3, 6, scalePercent(40, 90));
+        centerSphere.rotation.x = lerp(3, 6, scalePercent(40, 101));
 
       },
     })
 
-    animationScripts.push({
-      start: 90,
-      end: 101,
-      func: () => {
-        centerSphere.rotation.y += 0.002;
-      }})
+    // animationScripts.push({
+    //   start: 100,
+    //   end: 101,
+    //   func: () => {
+    //     // orbitingSpheres[0].position.set(0, 0, 0);
+    //     // orbitingSpheres[1].position.set(0, 0, 0);
+    //     // orbitingSpheres[2].position.set(0, 0, 0);
+    //   }})
 
 
     function playScrollAnimations() {
@@ -184,17 +189,17 @@ export default function Home() {
       <canvas id="bg" className=''></canvas>
         <main>
 
-        <div id="scrollProgress" className='fixed'></div>
+        <div id="scrollProgress" className='fixed top-1 left-1 text-sm opacity-50'></div>
 
-        <header>
+        <header className='mb-[1000px]'>
           <h1>Bridger Brown</h1>
           <p>Frontend Developer</p>
         </header>
-
+{/* 
 
         <blockquote>
           <p>I like making stuff and putting it on the internet</p>
-        </blockquote>
+        </blockquote>a */}
 
         <section>
           <h2>📜 Manifesto</h2>
